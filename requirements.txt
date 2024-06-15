@@ -1,9 +1,12 @@
+scipy
 pandas
+matplotlib
 numpy
-seaborn
+statsmodels
 matplotlib
 scikit-learn
 catboost
 xgboost
 dill
 Flask
+-e .
