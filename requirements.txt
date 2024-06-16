@@ -2,6 +2,8 @@ scipy
 pandas
 matplotlib
 numpy
+setuptools
+category_encoders
 statsmodels
 matplotlib
 scikit-learn
