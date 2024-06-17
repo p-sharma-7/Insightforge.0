@@ -3,6 +3,8 @@ pandas
 matplotlib
 numpy
 setuptools
+streamlit
+lazypredict
 category_encoders
 statsmodels
 matplotlib

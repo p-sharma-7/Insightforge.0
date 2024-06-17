@@ -263,8 +263,9 @@ def main():
             st.dataframe(df.head())
             if st.checkbox('Show Full Dataset'):
                 st.write(df)
-            
-            target_column_name = st.selectbox("Select Target Column", df.columns)
+
+            columns= [feature for feature in df.columns if df[feature].dtypes != 'O']
+            target_column_name = st.selectbox("Select Target Column", columns)
 
             #data_ingestion and data will save in the artifacts folder
             data_ingestion = DataIngestion()
@@ -290,8 +291,8 @@ def main():
                 best_model_name,best_model_score,mse,r2 = model_trainer.train_model(train_array, test_array)
                 st.write(f"Best Model Name: {best_model_name}")
                 st.write(f"Best Model Score: {[best_model_score]}")
-                st.write(mse)
-                st.write(r2)
+                st.write(f"Mean Squared Error: {mse}")
+                st.write(f"R2 Score: {r2}")
 
 
 
