@@ -43,19 +43,19 @@ class DataTransformation:
                 ]
             )
 
-            if data.nunique().sum() < 50:
-                cat_pipeline=Pipeline(steps=[
+            #if data.nunique().sum() < 50:
+            cat_pipeline=Pipeline(steps=[
                     ("imputer",SimpleImputer(strategy="most_frequent")),
                     ("one_hot_encoder",OneHotEncoder(handle_unknown="ignore")),
                     ("scaler",StandardScaler(with_mean=False))
                 ])
 
-            elif data.nunique().sum() > 50:
+            '''elif data.nunique().sum() > 50:
                 cat_pipeline=Pipeline(steps=[
                     ("imputer",SimpleImputer(strategy="most_frequent")),
                     ("Target encoding", ce.TargetEncoder()),
                     ("scaler",StandardScaler(with_mean=False))
-                ])
+                ])'''
 
             logging.info(f"Categorical columns: {categorical_columns}")
             logging.info(f"Numerical columns: {numerical_columns}")
@@ -65,7 +65,7 @@ class DataTransformation:
                 ("cat_pipelines",cat_pipeline,categorical_columns)]
             )
 
-            return preprocessor
+            return numerical_columns,categorical_columns,preprocessor
         
         except Exception as e:
             raise CustomException(e,sys)
@@ -93,7 +93,7 @@ class DataTransformation:
                 f"Applying preprocessing object on training dataframe and testing dataframe."
             )
 
-            input_feature_train_arr=preprocessing_obj.fit_transform(input_feature_train_df)
+            input_feature_train_arr=preprocessing_obj.fit_transform(input_feature_train_df, y= None)
             input_feature_test_arr=preprocessing_obj.transform(input_feature_test_df)
 
             train_arr = np.c_[input_feature_train_arr, np.array(target_feature_train_df)]

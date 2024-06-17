@@ -49,7 +49,7 @@ class ModelTrainer:
                 "CatBoosting Regressor": CatBoostRegressor(verbose=False),
                 "AdaBoost Regressor": AdaBoostRegressor(),
             }
-            params={
+            '''params={
                 "Decision Tree": {
                     'criterion':['squared_error', 'friedman_mse', 'absolute_error', 'poisson'],
                     # 'splitter':['best','random'],
@@ -85,9 +85,9 @@ class ModelTrainer:
                     'n_estimators': [8,16,32,64,128,256]
                 }
                 
-            }
+            }'''
 
-            model_report: dict = evaluate_models(X_train=X_train, y_train=y_train, X_test=X_test, y_test=y_test, models=models, param=params)
+            model_report: dict = evaluate_models(X_train=X_train, y_train=y_train, X_test=X_test, y_test=y_test, models=models)
 
             
             # To get best model score from dict
@@ -110,9 +110,7 @@ class ModelTrainer:
             logging.info(f"Mean Squared Error: {mse}")
             logging.info(f"R2 Score: {r2}")
 
-            return [best_model_name,best_model_score,(f"Mean Squared Error: {mse}"),(f"R2 Score: {r2}")]
-
-
+            return best_model_name,best_model_score,mse,r2
+        
         except Exception as e:
-            logging.error(f"Error in model training {e}")
             raise CustomException(e,sys)
