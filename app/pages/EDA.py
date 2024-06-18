@@ -63,23 +63,26 @@ if data is not None:
         all_columns = df.columns.to_list()
         st.write("These are the columns ",all_columns)
 
-    with col1 and col2:
-        col1.subheader("Summary")
+    with col2:
+        col2.subheader("Summary")
         st.write(df.describe(include='all'))
     
     
-    if st.checkbox("Show Selected Columns"):
+    with col1:
         all_columns = df.columns.to_list()
         selected_columns = st.multiselect("Select Columns for display", all_columns)
         new_df = df[selected_columns]
         st.dataframe(new_df)
     
-    if st.checkbox("Show Value Counts"):
+    with col2:
+        col2.subheader("Value Counts")
         all_columns = df.columns.to_list()
-        selected_column = st.selectbox("Select a selected_columns_names for value counts", all_columns)
-        st.write(df[selected_column].value_counts())
+        selected_column = st.multiselect("Select a selected_columns_names for value counts", all_columns)
+        for i in range(len(selected_column)):
+            st.write(df[i].value_counts())
     
-    if st.checkbox("Correlation Plot"):
+    with col1:
+        col1.subheader("Coorelation Plot")
         st.success("Building your correlation plot !")
         # Apply LabelEncoder to string columns
         df_encoded = df.copy()
@@ -91,7 +94,8 @@ if data is not None:
         sns.heatmap(df_encoded.corr(), annot=True, cmap='coolwarm', linewidths=0.5, ax=ax)
         st.pyplot(fig)
         
-    if st.checkbox("Pie Plot"):
+    with col2:
+        col2.subheader("Pie Plot")
         all_columns = df.columns.to_list()
         column_to_plot = st.selectbox("Select 1 Column for Pie Plot", all_columns)
                 
