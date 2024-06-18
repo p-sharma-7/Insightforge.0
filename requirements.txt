@@ -4,6 +4,8 @@ matplotlib
 numpy
 setuptools
 streamlit
+duckdb
+openpyxl
 lazypredict
 category_encoders
 statsmodels

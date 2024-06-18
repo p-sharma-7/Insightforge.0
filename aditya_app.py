@@ -29,7 +29,7 @@ if uploaded_file is None:
 
 @st.cache_data
 def load_data(path: str):
-    df = pd.read_csv(path)
+    df = pd.read_excel(path)
     return df
 
 
