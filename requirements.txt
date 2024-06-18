@@ -13,6 +13,8 @@ matplotlib
 scikit-learn
 catboost
 xgboost
+ydata_profiling
+streamlit_pandas_profiling
 dill
 Flask
 -e .

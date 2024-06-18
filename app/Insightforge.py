@@ -10,7 +10,7 @@ st.set_page_config(page_title="Sales Dashboard", page_icon=":bar_chart:", layout
 
 def main():
 
-    list_of_tabs = ['Home',"EDA", "Data visualization", "Prediction",'Dashboard']
+    list_of_tabs = ['Home',"EDA", "Data visualization", "Prediction"]
     tabs = st.tabs(list_of_tabs)
 
     with tabs[0]:
@@ -21,8 +21,7 @@ def main():
         st.page_link('pages/Data_visualization.py', label='Data visualization', use_container_width=True)
     with tabs[3]:
         st.page_link('pages/Prediction.py', label='Prediction', use_container_width=True)
-    with tabs[4]:
-        st.page_link('pages/Dashboard.py', label='Dashboard', use_container_width=True)
+
 
         
 

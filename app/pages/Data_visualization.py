@@ -14,7 +14,7 @@ import seaborn as sns
 # Encoding and ML Packages
 from sklearn.preprocessing import LabelEncoder
 
-list_of_tabs = ['Home',"EDA", "Data visualization", "Prediction",'Dashboard']
+list_of_tabs = ['Home',"EDA", "Data visualization", "Prediction"]
 tabs = st.tabs(list_of_tabs)
 
 with tabs[0]:
@@ -25,8 +25,7 @@ with tabs[2]:
         st.page_link('pages/Data_visualization.py', label='Data visualization', use_container_width=True)
 with tabs[3]:
         st.page_link('pages/Prediction.py', label='Prediction', use_container_width=True)
-with tabs[4]:
-        st.page_link('pages/Dashboard.py', label='Dashboard', use_container_width=True)
+
 
 data = st.file_uploader("Upload a Dataset", type=["csv", "txt"])
 if data is not None:
