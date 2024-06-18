@@ -1,32 +1,49 @@
-# Core Packages
 import streamlit as st
 st.set_option('deprecation.showPyplotGlobalUse', False)
-
-# EDA Packages
 import pandas as pd 
 import numpy as np 
-
-# Data Visualization Packages
 import matplotlib.pyplot as plt 
 import matplotlib
 matplotlib.use("Agg")
 import seaborn as sns
-
-# Encoding and ML Packages
 from sklearn.preprocessing import LabelEncoder
 
+#---------------------------------#
+# Page layout
+
+st.set_page_config(page_title="Sales Dashboard", page_icon=":bar_chart:", layout="wide")
+
 st.title("Exploratory Data Analysis")
+list_of_tabs = ['Home',"EDA", "Data visualization", "Prediction",'Dashboard']
+tabs = st.tabs(list_of_tabs)
+with tabs[0]:
+        st.page_link('Insightforge.py', label='Home', use_container_width=True)
+with tabs[1]:
+        st.page_link('pages/EDA.py', label='EDA', use_container_width=True)
+with tabs[2]:
+        st.page_link('pages/Data_visualization.py', label='Data visualization', use_container_width=True)
+with tabs[3]:
+        st.page_link('pages/Prediction.py', label='Prediction', use_container_width=True)
+with tabs[4]:
+        st.page_link('pages/Dashboard.py', label='Dashboard', use_container_width=True)
 
 data = st.file_uploader("Upload a Dataset", type=["csv", "txt"])
-        
+
+
+#pagelayout finished
+#---------------------------------#    
+
+   
 if data is not None:
     df = pd.read_csv(data)
     df.dropna(how='any', inplace=True)
     df.drop_duplicates(keep='first', inplace=True)
-    st.dataframe(df.head())
+
     
     if st.checkbox('Show Full Dataset'):
         st.write(df)
+    else:
+        st.write(df.head())
     
     if st.checkbox("Show Shape"):
         st.write(df.shape)
