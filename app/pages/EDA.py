@@ -1,5 +1,6 @@
 import streamlit as st
 st.set_option('deprecation.showPyplotGlobalUse', False)
+import os
 import pandas as pd 
 import numpy as np 
 import matplotlib.pyplot as plt 
@@ -15,7 +16,7 @@ from streamlit_pandas_profiling import st_profile_report
 #---------------------------------#
 # Page layout
 
-st.set_page_config(page_title="Sales Dashboard", page_icon=":bar_chart:", layout="wide")
+st.set_page_config(page_title="Exploratory Data Analysis", page_icon=":bar_chart:", layout="wide")
 
 st.title("Exploratory Data Analysis")
 list_of_tabs = ['Home',"EDA", "Data visualization", "Prediction"]
@@ -31,17 +32,25 @@ with tabs[3]:
 
 
 data = st.file_uploader("Upload a Dataset", type=["csv", "txt"])
-if st.button("Use diabetes Dataset"):
-    diabetes = load_diabetes()
-    diabetes_df = pd.DataFrame(diabetes.data, columns=diabetes.feature_names)
-    diabetes_df['TARGET'] = diabetes.target
-    diabetes_df.to_csv('diabetes_dataset.csv', index=False)
-    data = 'diabetes_dataset.csv'
-
-if st.button('Student Performance Dataset'):
-    data= pd.read_csv("artifacts\StudentsPerformance_dataset.csv")
 
 col1, col2, = st.columns(2)
+
+with col1:
+     
+    if st.button("Use diabetes Dataset"):
+        diabetes = load_diabetes()
+        diabetes_df = pd.DataFrame(diabetes.data, columns=diabetes.feature_names)
+        diabetes_df['TARGET'] = diabetes.target
+        diabetes_df.to_csv('diabetes_dataset.csv', index=False)
+        data = 'diabetes_dataset.csv'
+
+st.markdown("""
+[StudentPerfromance.csv](https://raw.githubusercontent.com/p-sharma-7/Insightforge.0/main/artifacts/StudentsPerformance_dataset.csv)
+""")
+#---------------------------------#
+
+
+
 
 #pagelayout finished
 #---------------------------------#    
@@ -52,6 +61,7 @@ if data is not None:
     df.dropna(how='any', inplace=True)
     df.drop_duplicates(keep='first', inplace=True)
 
+
     with col2:
         if st.checkbox('Show Full Dataset'):
             st.write(df)
@@ -59,9 +69,12 @@ if data is not None:
             st.write(df.head())
     
     with col1:
-        col1.subheader("Variables in the dataset")
-        all_columns = df.columns.to_list()
-        st.write("These are the columns ",all_columns)
+        st.write('Data Shape:', df.shape)
+        st.write('Data Columns:', df.columns)
+        st.write('Data Types:', df.dtypes)
+        st.write('Data Info:', df.info())
+        st.write('Data Missing Values:', df.isnull().sum())
+        
 
     with col2:
         col2.subheader("Summary")
@@ -77,9 +90,13 @@ if data is not None:
     with col2:
         col2.subheader("Value Counts")
         all_columns = df.columns.to_list()
-        selected_column = st.multiselect("Select a selected_columns_names for value counts", all_columns)
-        for i in range(len(selected_column)):
-            st.write(df[i].value_counts())
+        selected_columns = st.multiselect("Select a selected_columns_names for value counts", all_columns)
+        # Check if any columns are selected
+        if selected_columns:
+            for column_name in selected_columns:
+                st.write(df[column_name].value_counts())
+        else:
+            st.write("Please select at least one column.")
     
     with col1:
         col1.subheader("Coorelation Plot")
@@ -110,3 +127,4 @@ if data is not None:
                     ax=ax
                 )
         st.pyplot(fig)  # Pass the figure to st.pyplot()
+

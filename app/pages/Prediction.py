@@ -27,6 +27,7 @@ from src.components.data_transformtion import DataTransformationConfig
 from src.components.model_trainer import ModelTrainer
 from src.components.model_trainer import ModelTrainerConfig
 from src.components.predict_pipeline import PredictPipeline
+from sklearn.datasets import load_diabetes
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
@@ -46,7 +47,12 @@ with tabs[3]:
 
 data = st.file_uploader("Upload a Dataset", type=["csv", "txt"])
 
-
+if st.button("Use diabetes Dataset"):
+        diabetes = load_diabetes()
+        diabetes_df = pd.DataFrame(diabetes.data, columns=diabetes.feature_names)
+        diabetes_df['TARGET'] = diabetes.target
+        diabetes_df.to_csv('diabetes_dataset.csv', index=False)
+        data = 'diabetes_dataset.csv'
 
 if data is not None:
             df = pd.read_csv(data)
