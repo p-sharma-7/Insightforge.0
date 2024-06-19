@@ -49,8 +49,23 @@ def evaluate_models(X_train, y_train, X_test, y_test, models):
 
         return report
 
+
     except Exception as e:
         raise CustomException(e, sys)
+    
+def load_studentperformance():
+    """
+    This function is responsible for loading the file from the file path
+    :param file_path: file path from where the file is to be loaded
+    :return: file
+    """
+    try:
+        with open('artifacts/StudentsPerformance_dataset.csv', 'r') as file:
+            return file.read()
+    except Exception as e:
+        raise CustomException(e,sys)
+    
+
 def load_object(file_path):
     """
         This function is responsible for loading the object from the file path

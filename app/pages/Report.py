@@ -6,6 +6,7 @@ from ydata_profiling import ProfileReport
 from streamlit_pandas_profiling import st_profile_report
 
 # Web App Title
+st.set_page_config(page_title="Exploratory Data Analysis", page_icon=":bar_chart:", layout="wide")
 st.markdown('''
 # **Complete EDA Report**
             
@@ -13,12 +14,24 @@ This is the **Complete EDA Report** created in Streamlit using the **pandas-prof
 
 ---
 ''')
+coly1, coly2, coly3, coly4, coly5 = st.columns(5)
+#list_of_tabs = ['Home',"EDA", "Data visualization", "Prediction"]
+#tabs = st.tabs(list_of_tabs)
+with coly1:
+        st.page_link('Insightforge.py', label='Home page', use_container_width=True)
+        
+with coly2:
+        st.page_link('pages/EDA.py', label='EDA', use_container_width=True)
+with coly3:
+        st.page_link('pages/Data_visualization.py', label='Data visualization', use_container_width=True)
+with coly4:
+        st.page_link('pages/Prediction.py', label='Prediction', use_container_width=True)
+with coly5:
+        st.page_link('pages/Report.py', label='Report page', use_container_width=True)
+
 # Upload CSV data
-st.header('1. Upload your CSV data')
+
 uploaded_file = st.file_uploader("Upload a Dataset", type=["csv", "txt"])
-st.markdown("""
-[Example CSV input file](https://raw.githubusercontent.com/dataprofessor/data/master/delaney_solubility_with_descriptors.csv)
-""")
 
 # Pandas Profiling Report
 if uploaded_file is not None:

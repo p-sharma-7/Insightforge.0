@@ -32,18 +32,21 @@ from sklearn.datasets import load_diabetes
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 st.title("Machine Learning Prediction Model")
+st.write('---')
+coly1, coly2, coly3, coly4, coly5 = st.columns(5)
 
-list_of_tabs = ['Home',"EDA", "Data visualization", "Prediction"]
-tabs = st.tabs(list_of_tabs)
-
-with tabs[0]:
-        st.page_link('Insightforge.py', label='Home', use_container_width=True)
-with tabs[1]:
+with coly1:
+        st.page_link('Insightforge.py', label='Home page', use_container_width=True)
+        
+with coly2:
         st.page_link('pages/EDA.py', label='EDA', use_container_width=True)
-with tabs[2]:
+with coly3:
         st.page_link('pages/Data_visualization.py', label='Data visualization', use_container_width=True)
-with tabs[3]:
+with coly4:
         st.page_link('pages/Prediction.py', label='Prediction', use_container_width=True)
+with coly5:
+        st.page_link('pages/Report.py', label='Report page', use_container_width=True)
+
 
 data = st.file_uploader("Upload a Dataset", type=["csv", "txt"])
 

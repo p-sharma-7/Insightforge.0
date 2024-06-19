@@ -15,6 +15,9 @@ catboost
 xgboost
 ydata_profiling
 streamlit_pandas_profiling
+html5lib
+lxml
+beautifulsoup4
 dill
 Flask
 -e .

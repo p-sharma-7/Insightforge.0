@@ -1,146 +1,224 @@
-# Core Packages
-import streamlit as st
-st.set_option('deprecation.showPyplotGlobalUse', False)
-
-# EDA Packages
-import pandas as pd 
-import numpy as np 
-
-# Data Visualization Packages
-import matplotlib.pyplot as plt 
-import matplotlib
-matplotlib.use("Agg")
+# important libraries
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
 import seaborn as sns
-# Encoding and ML Packages
+import streamlit as st
 from sklearn.preprocessing import LabelEncoder
 
-list_of_tabs = ['Home',"EDA", "Data visualization", "Prediction"]
-tabs = st.tabs(list_of_tabs)
+# Page Layout
+st.set_option('deprecation.showPyplotGlobalUse', False)
+st.set_page_config(
+    page_title="InsightForge", page_icon=":bar_chart:",layout="wide"
+)
+st.title("Data Visualization")
+st.write('---')
+coly1, coly2, coly3, coly4, coly5 = st.columns(5)
 
-with tabs[0]:
-        st.page_link('Insightforge.py', label='Home', use_container_width=True)
-with tabs[1]:
+with coly1:
+        st.page_link('Insightforge.py', label='Home page', use_container_width=True)
+        
+with coly2:
         st.page_link('pages/EDA.py', label='EDA', use_container_width=True)
-with tabs[2]:
+with coly3:
         st.page_link('pages/Data_visualization.py', label='Data visualization', use_container_width=True)
-with tabs[3]:
+with coly4:
         st.page_link('pages/Prediction.py', label='Prediction', use_container_width=True)
+with coly5:
+        st.page_link('pages/Report.py', label='Report page', use_container_width=True)
 
 
-data = st.file_uploader("Upload a Dataset", type=["csv", "txt"])
-if data is not None:
-            df = pd.read_csv(data)
-            # Drop rows with any missing values
-            df.dropna(how='any', inplace=True)
-            # Drop duplicate rows, keeping the first occurrence
-            df.drop_duplicates(keep='first', inplace=True)
-            # Display the first few rows of the dataframe
-            st.dataframe(df.head())
 
-            if st.checkbox('Show Full Dataset'):
-                st.write(df)
+def main():
+    '''Data Visualization'''
+    data = st.file_uploader("Upload Dataset",type=["csv"])
+    if data is not None:
 
-            if st.checkbox("Show Value Counts"):
-                all_columns = df.columns.to_list()
-                selected_column = st.selectbox("Select a selected_columns_names for value counts", all_columns)
-                st.write(df[selected_column].value_counts().plot(kind='bar'))
-                st.pyplot()
-    
-            st.subheader("Select Plot Type")
-            plot_choice = st.radio(label="Select Type Here",options= ["Regular Plots", "Comparing Plots"])
-            st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>',unsafe_allow_html=True)
+        # Read the uploaded file
+        df = pd.read_csv(data)
+        df_uncleaned = df.copy()
 
-            if plot_choice == "Regular Plots":
+        # Drop rows with any missing values
+        df.dropna(how='any', inplace=True)
 
-                # Customizable Plot
-                all_columns_names = df.columns.tolist()
-                type_of_plot = st.selectbox("Select Type of Plot",['Histogram', 'Bar Plot', 'Box Plot','Pie Chart', 'Heatmap' 
-                                                                   ,'Pair Plot', 'Density Plot'])
-                selected_columns_names = st.multiselect("Select Columns To Plot", all_columns_names)
+        # Drop duplicate rows, keeping the first occurrence
+        df.drop_duplicates(keep='first', inplace=True)
 
-                if st.button("Generate Plot"):
-                    st.success(f"Generating Customizable Plot of {type_of_plot} for {selected_columns_names}")
+        # Displaying Dataset
+        st.header("Dataset Section")
+        dataset_type = ["Cleaned Dataset","Uncleaned Dataset"]
+        dataset_type_choice = st.select_slider("",dataset_type)
 
-                    # Plots 
-                    if type_of_plot == 'Histogram':
-                        plt.hist(df[selected_columns_names])
-                        plt.xlabel(selected_columns_names)
-                        st.pyplot()
+        if dataset_type_choice == "Cleaned Dataset":
+            st.write("Data Shape")
+            st.write(df.shape)
+            st.write(df)
+        if dataset_type_choice == "Uncleaned Dataset":
+            st.write("Data Shape")
+            st.write(df_uncleaned.shape)
+            st.write(df_uncleaned)
 
-                    if type_of_plot == 'Bar Plot':
-                        count_data = df[selected_columns_names[0]].value_counts()
-                        plt.bar(count_data.index, count_data.values)
-                        plt.xlabel(selected_columns_names[0])
-                        st.pyplot()
+        # Differentiating the columns on the basis of their data types
+        def identify_column_types(data):
 
-                    if type_of_plot == 'Box Plot':
-                        st.write("NOTE: Do not work for the string contained columns !")
-                        plt.figure(figsize=(10, 6))
-                        sns.boxplot(data=df[selected_columns_names])
-                        st.pyplot()
+            objective_cols = []
+            numeric_cols = []
+            for col in df.columns:
+                if df[col].dtype == 'object':
+                    objective_cols.append(col)
+                else:
+                    numeric_cols.append(col)
+            return objective_cols, numeric_cols
+        
+        objective_cols, numeric_cols = identify_column_types(df) # passing the cleaned dataset
 
-                    if type_of_plot == 'Pie Chart':
-                        plt.pie(df[selected_columns_names].value_counts(), labels=df[selected_columns_names].value_counts().index, autopct='%1.1f%%')
-                        st.pyplot()
+        st.header("Column's Section")
+        column_type = ["Categorical Columns","Numerical Columns"]
+        column_type_choice = st.select_slider("",column_type)
 
-                    if type_of_plot == 'Heatmap': 
-                        st.text("NOTE: No need to select the columns because its non functional in this plot!")
+        if column_type_choice == "Categorical Columns":
+                st.write(objective_cols)
+            
+        if column_type_choice == "Numerical Columns":
+                st.write(numeric_cols)
 
-                        df_encode = df.copy()
-                        le = LabelEncoder()
-                        for col in df.select_dtypes(include=['object']).columns:
-                            df_encode[col] = le.fit_transform(df_encode[col])
-                        # Plotting heatmap matrix using seaborn
-                        fig, ax = plt.subplots(figsize=(10, 8))
-                        sns.heatmap(df_encode.corr(), annot=True, cmap='coolwarm', linewidths=0.5, ax=ax)
-                        st.pyplot(fig)
+        
+        st.header("Plot's Section")
+        tab1,tab2,tab3 = st.tabs(["Univariate Plots","Summary Plots","Bivariate Plots"])
+        # plot_type_choice = st.radio("",plot_type)
+        # st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>',unsafe_allow_html=True)
 
-                    if type_of_plot == 'Pair Plot':
-                        st.text("NOTE: No need to select the columns because its non functional in this plot!")
-                        sns.pairplot(df)
-                        st.pyplot()
-                    
-                    if type_of_plot == 'Density Plot':
-                        st.text("NOTE: Do not Select the columns contains String !")
-                        sns.kdeplot(df[selected_columns_names], shade=True)
-                        st.pyplot() 
-
-            if plot_choice == "Comparing Plots":
-
-                # Comparing Plots
-                type_of_plot_CP = st.selectbox("Select Type of Plot",["Scatter Plot","Line Plot","Area Plot","Violin Plot"])
-
-                if type_of_plot_CP == 'Scatter Plot':
-                    x_column = st.selectbox("Select X Column for Line Plot", df.columns)
-                    y_column = st.selectbox("Select Y Column for Line Plot", df.columns)
-                    plt.plot(df[x_column], df[y_column],color='blue', marker='o', linestyle='--', linewidth=1, markersize=5, )
-                    plt.grid()
-                    plt.xlabel(x_column)
-                    plt.ylabel(y_column)
+        
+        with tab1:
+            st.subheader("Univariate Plots")
+            st.markdown(
+                '''
+                **This plot contains those types of plots which take only one argument as input !** \n
+                '''
+            )
+            col1,col2 = st.columns(2)
+            columns_uni = st.selectbox("Select Column", df.columns)
+            if df[columns_uni].dtype == 'object':
+                with col1:
+                    col1.subheader("HISTOGRAM")
+                    sns.histplot(x=columns_uni, data=df)  # Correct usage of sns.histplot
+                    plt.xlabel(columns_uni)
                     st.pyplot()
-                    
-                if type_of_plot_CP == 'Line Plot':
-                    x_column = st.selectbox("Select X Column for Line Plot", df.columns)
-                    y_column = st.selectbox("Select Y Column for Line Plot", df.columns)
-                    plt.plot(df[x_column], df[y_column])
-                    plt.xlabel(x_column)
-                    plt.ylabel(y_column)
+                with col2:
+                    col2.subheader("BAR CHART")
+                    sns.countplot(x=columns_uni, data=df)  # Correct usage of sns.countplot
+                    plt.xlabel(columns_uni)
                     st.pyplot()
-                
-                if type_of_plot_CP == 'Area Plot':
-                    x_column = st.selectbox("Select X Column for Area Plot", df.columns)
-                    y_column = st.selectbox("Select Y Column for Area Plot", df.columns)
-                    plt.fill_between(df[x_column], df[y_column])
-                    plt.xlabel(x_column)
-                    plt.ylabel(y_column)
+                with col1:
+                    col1.subheader("PIE CHART")
+                    category_counts = df[columns_uni].value_counts()
+                    plt.pie(category_counts.values, labels=category_counts.index, autopct='%1.1f%%') 
                     st.pyplot()
-                
-                if type_of_plot_CP == 'Violin Plot':
-                    x_column = st.selectbox("Select X Column for Violin Plot", df.columns)
-                    y_column = st.selectbox("Select Y Column for Violin Plot", df.columns)
+
+                with col2:
+                    col2.subheader("BOX PLOT")
                     plt.figure(figsize=(10, 6))
-                    sns.violinplot(x=df[x_column], y=df[y_column])
-                    plt.xlabel(x_column)
-                    plt.ylabel(y_column)
-                    st.pyplot()   
+                    sns.boxplot(data=df[columns_uni])
+                    st.pyplot()
 
+            else:
+                with col1:
+                    col1.subheader("BOX PLOT")
+                    plt.figure(figsize=(10, 6))
+                    sns.boxplot(data=df[columns_uni])
+                    st.pyplot()
+
+                with col2:
+                    col2.subheader("DENSITY PLOT")
+                    sns.kdeplot(df[columns_uni], shade=True)
+                    st.pyplot()
+
+                with col1:
+                    col1.subheader("HISTOGRAM")
+                    sns.histplot(x=columns_uni, data=df)  # Correct usage of sns.histplot
+                    plt.xlabel(columns_uni)
+                    st.pyplot()
+
+                with col2:
+                    col2.subheader("BAR CHART")
+                    sns.countplot(x=columns_uni, data=df)  # Correct usage of sns.countplot
+                    plt.xlabel(columns_uni)
+                    st.pyplot()
+
+                with col1:
+                    col1.subheader("PIE CHART")
+                    category_counts = df[columns_uni].value_counts()
+                    plt.pie(category_counts.values, labels=category_counts.index, autopct='%1.1f%%') 
+                    st.pyplot()
+
+
+        with tab2:
+            st.subheader("Summary Plots")
+            st.markdown(
+                '''
+                **This plot is used to describe a short summary of the dataset which do not requires any columns to be selected !**
+                '''
+            )
+            col1,col2 = st.columns(2)
+            with col1:
+                col1.subheader("Heat Map")            
+                # Apply LabelEncoder to string columns
+                df_encode = df.copy()
+                le = LabelEncoder()
+                for col in df.select_dtypes(include=['object']).columns:
+                    df_encode[col] = le.fit_transform(df_encode[col])
+                # Plotting heatmap matrix using seaborn
+                fig, ax = plt.subplots(figsize=(15, 15))
+                sns.heatmap(df_encode.corr(), annot=True, cmap='coolwarm', linewidths=0.5, ax=ax)
+                st.pyplot(fig)
+
+            with col2:
+                col2.subheader("Pair Plot")
+                # Create the pair plot
+                fig, ax = plt.subplots(figsize=(15, 15))
+                sns.pairplot(df) # Create a pair plot for all columns in the DataFrame
+                st.pyplot()
+                
+
+        with tab3:
+            st.subheader("Bivariate Plots")
+            st.markdown(
+                '''
+                **This plot contains those types of plots which can take two argument as input for Data comparison !**
+                '''
+            )
+            col1,col2 = st.columns(2)
+            x_column = st.selectbox("Select X Column", df.columns)
+            y_column = st.selectbox("Select Y Column", df.columns)
+
+            with col1:
+                col1.subheader("SCATTER PLOT")
+                sns.scatterplot(x=df[x_column], y=df[y_column])
+                plt.xlabel(x_column)
+                plt.ylabel(y_column)
+                st.pyplot()
+
+            with col2:
+                col2.subheader("LINE PLOT")
+                sns.lineplot(x=df[x_column], y=df[y_column])
+                plt.xlabel(x_column)
+                plt.ylabel(y_column)
+                st.pyplot()
+                
+            with col1:
+                col1.subheader("AREA PLOT")
+                plt.fill_between(df[x_column], df[y_column])
+                plt.xlabel(x_column)
+                plt.ylabel(y_column)
+                st.pyplot()
+
+            with col2:
+                col2.subheader("VIOLIN PLOT")
+                plt.figure(figsize=(10, 6))
+                sns.violinplot(x=df[x_column], y=df[y_column])
+                plt.xlabel(x_column)
+                plt.ylabel(y_column)
+                st.pyplot()
+
+if __name__ == '__main__':
+    main()
