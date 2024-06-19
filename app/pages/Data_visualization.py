@@ -5,13 +5,15 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import streamlit as st
 from sklearn.preprocessing import LabelEncoder
+from sklearn.datasets import load_diabetes
 
-# Page Layout
-st.set_option('deprecation.showPyplotGlobalUse', False)
-st.set_page_config(
-    page_title="InsightForge", page_icon=":bar_chart:",layout="wide"
-)
-st.title("Data Visualization")
+
+
+#---------------Page layout------------------#
+
+st.set_page_config(page_title="Data visualization", page_icon=":bar_chart:", layout="wide")
+
+st.title("Data visualization")
 st.write('---')
 coly1, coly2, coly3, coly4, coly5 = st.columns(5)
 
@@ -26,12 +28,91 @@ with coly4:
         st.page_link('pages/Prediction.py', label='Prediction', use_container_width=True)
 with coly5:
         st.page_link('pages/Report.py', label='Report page', use_container_width=True)
+st.markdown('')
+st.markdown('')
+st.markdown('')
+data = st.file_uploader("Upload a Dataset", type=["csv", "txt"])
 
+#-----------------pagelayout finished------------------#
+
+
+#----------------data ingestion-------------------------#
+
+# Define functions to load datasets
+@st.cache_data
+def load_diabetes_dataset():
+    diabetes = load_diabetes()
+    diabetes_df = pd.DataFrame(diabetes.data, columns=diabetes.feature_names)
+    diabetes_df['TARGET'] = diabetes.target
+    return diabetes_df
+
+@st.cache_data
+def load_studentperformance_dataset():
+    return pd.read_csv('https://raw.githubusercontent.com/p-sharma-7/Insightforge.0/main/artifacts/StudentsPerformance_dataset.csv')
+
+@st.cache_data
+def load_tips_dataset():
+    return pd.read_csv('https://raw.githubusercontent.com/p-sharma-7/Insightforge.0/main/artifacts/tips_dataset.csv')
+
+# Initialize session state to track selected dataset and checkboxes
+if 'selected_dataset' not in st.session_state:
+    st.session_state.selected_dataset = None
+    st.session_state.data = None
+
+if 'diabetes_checkbox' not in st.session_state:
+    st.session_state.diabetes_checkbox = False
+
+if 'studentperformance_checkbox' not in st.session_state:
+    st.session_state.studentperformance_checkbox = False
+
+if 'titanic_checkbox' not in st.session_state:
+    st.session_state.titanic_checkbox = False
+
+# Define function to reset other checkboxes
+def reset_other_checkboxes(selected):
+    st.session_state.diabetes_checkbox = selected == 'diabetes'
+    st.session_state.studentperformance_checkbox = selected == 'studentperformance'
+    st.session_state.titanic_checkbox = selected == 'titanic'
+
+# Streamlit layout with three columns
+cole1, cole2, cole3 = st.columns(3)
+
+# Load diabetes dataset
+with cole2:
+    if st.checkbox("Use diabetes Dataset", key='diabetes_checkbox', on_change=reset_other_checkboxes, args=('diabetes',)):
+        if st.session_state.diabetes_checkbox:
+            st.session_state.selected_dataset = 'diabetes'
+            st.session_state.data = load_diabetes_dataset()
+            st.session_state.data.to_csv('artifacts/diabetes_dataset.csv', index=False)
+            data='artifacts/diabetes_dataset.csv'
+
+# Load student performance dataset
+with cole1:
+    if st.checkbox("Use studentperformance Dataset", key='studentperformance_checkbox', on_change=reset_other_checkboxes, args=('studentperformance',)):
+        if st.session_state.studentperformance_checkbox:
+            st.session_state.selected_dataset = 'studentperformance'
+            st.session_state.data = load_studentperformance_dataset()
+            st.session_state.data.to_csv('artifacts/studentperformance_dataset.csv', index=False)
+            data='artifacts/studentperformance_dataset.csv'
+
+# Load tips dataset
+with cole3:
+    if st.checkbox("Use tips Dataset", key='tips_checkbox', on_change=reset_other_checkboxes, args=('titanic',)):
+        if st.session_state.titanic_checkbox:
+            st.session_state.selected_dataset = 'titanic'
+            st.session_state.data = load_tips_dataset()
+            st.session_state.data.to_csv('artifacts/tips_dataset.csv', index=False)
+            data='artifacts/tips_dataset.csv'
+
+
+
+#----------------data ingestion finished-------------------------#
+
+#----------------data visualization started-------------------------#
 
 
 def main():
     '''Data Visualization'''
-    data = st.file_uploader("Upload Dataset",type=["csv"])
     if data is not None:
 
         # Read the uploaded file
@@ -219,6 +300,8 @@ def main():
                 plt.xlabel(x_column)
                 plt.ylabel(y_column)
                 st.pyplot()
+    else:
+        st.warning("No dataset loaded. Please upload a file or select a dataset.")
 
 if __name__ == '__main__':
     main()

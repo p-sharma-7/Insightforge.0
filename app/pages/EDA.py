@@ -84,7 +84,7 @@ def reset_other_checkboxes(selected):
 cole1, cole2, cole3 = st.columns(3)
 
 # Load diabetes dataset
-with cole1:
+with cole2:
     if st.checkbox("Use diabetes Dataset", key='diabetes_checkbox', on_change=reset_other_checkboxes, args=('diabetes',)):
         if st.session_state.diabetes_checkbox:
             st.session_state.selected_dataset = 'diabetes'
@@ -93,7 +93,7 @@ with cole1:
             data='artifacts/diabetes_dataset.csv'
 
 # Load student performance dataset
-with cole2:
+with cole1:
     if st.checkbox("Use studentperformance Dataset", key='studentperformance_checkbox', on_change=reset_other_checkboxes, args=('studentperformance',)):
         if st.session_state.studentperformance_checkbox:
             st.session_state.selected_dataset = 'studentperformance'
@@ -114,10 +114,7 @@ with cole3:
 
 #----------------data ingestion finished-------------------------#
 
-st.markdown('')
-st.markdown('')
-st.markdown('')
-st.markdown('')
+
 #-----------------EDA------------------#
 col1, col2, = st.columns(2)
 
@@ -221,3 +218,6 @@ if data is not None:
         ax.set_title(f'Pie Chart of {column_to_plot}', fontsize=14)  # Set a title
         
         st.pyplot(fig)  # Display the figure in Streamlit
+
+else:
+    st.warning("No dataset loaded. Please upload a file or select a dataset.")
