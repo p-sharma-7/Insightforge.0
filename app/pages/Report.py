@@ -117,8 +117,8 @@ if st.session_state.data is not None:
     st.header('**Pandas Profiling Report**')
     st_profile_report(ProfileReport(st.session_state.data, explorative=True))  # Pass the DataFrame directly
 
-    # Button to generate and download report
-    if st.button("Generate and Download Report"):
+    # Button to download report
+    if st.button("Download Report"):
         download_profile_report(st.session_state.data)
 else:
     st.warning("No dataset loaded. Please upload a file or select a dataset.")

@@ -1,0 +1,81 @@
+/* styles.css */
+body, html {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative; /* Allow positioning of content */
+}
+/* Main content styles */
+body {
+    font-family: 'Georgia', serif;
+    background-color: #22292f; /* Set background color for body */
+    position: relative; /* Allow positioning of content */
+    overflow: hidden; /* Prevent scrollbars */
+}
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    padding-top: 30px;
+    z-index: 1; /* Ensure content stays above canvas */
+}
+
+.logo-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 100px;
+}
+
+#logo {
+    width: 560px; /* Adjust image width as needed */
+    height: auto;
+    margin-top: 10px;
+    animation: logoAnimation 2s ;
+    border-radius: 50%;
+    margin-bottom: -100px ;
+}
+
+.animated-text {
+    font-size: 2.5em;
+    color: #fff;
+    margin-top: -80px;
+    animation: textAnimation 2s ;
+}
+
+.animated-text-des{
+    font-size: 1.5em ;
+    margin-top: -30px;
+    color: #fff;
+    font-family: 'Garamond', serif;
+}
+
+button {
+    padding: 15px 50px;
+    font-size: 1.2em;
+    background-color: #00c1a2;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px; /* Rounded corners */
+    margin-top: -130px;
+}
+
+button:hover{
+    background-color: #029d83 ;
+}
+
+#backgroundCanvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1; /* Ensure canvas stays behind content */
+}

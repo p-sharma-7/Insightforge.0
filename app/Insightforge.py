@@ -7,9 +7,9 @@ import pandas as pd
 import numpy as np
 
 st.set_page_config(page_title="Home page", page_icon=":bar_chart:", layout="wide")
+
+
 coly1, coly2, coly3, coly4, coly5 = st.columns(5)
-#list_of_tabs = ['Home',"EDA", "Data visualization", "Prediction"]
-#tabs = st.tabs(list_of_tabs)
 
 with coly1:
         st.page_link('Insightforge.py', label='Home page', use_container_width=True)
