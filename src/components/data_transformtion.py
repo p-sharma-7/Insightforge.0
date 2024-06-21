@@ -29,7 +29,6 @@ class DataTransformation:
         '''
         try:
             data= pd.read_csv('artifacts/data.csv')
-
             X= data.drop(columns=[target_column_name],axis=1)
 
             numerical_columns = [feature for feature in X.columns if X[feature].dtypes != 'O']
@@ -50,7 +49,8 @@ class DataTransformation:
                     ("scaler",StandardScaler(with_mean=False))
                 ])
 
-            '''elif data.nunique().sum() > 50:
+            '''
+                elif data.nunique().sum() > 50:
                 cat_pipeline=Pipeline(steps=[
                     ("imputer",SimpleImputer(strategy="most_frequent")),
                     ("Target encoding", ce.TargetEncoder()),

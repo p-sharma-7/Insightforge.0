@@ -6,6 +6,7 @@ import numpy as np
 import pandas as pd
 from sklearn.metrics import mean_squared_error, r2_score, mean_squared_log_error
 from sklearn.model_selection import GridSearchCV
+from sklearn.preprocessing import LabelEncoder
 
 from src.exception import CustomException
 
@@ -33,13 +34,7 @@ def evaluate_models(X_train, y_train, X_test, y_test, models):
 
         for i in range(len(list(models))):
             model = list(models.values())[i]
-            '''para=param[list(models.keys())[i]]
-
-        gs = GridSearchCV(model,para,cv=3)
-        gs.fit(X_train,y_train)
-
-        model.set_params(**gs.best_params_)
-        model.fit(X_train,y_train)'''
+            
             model.fit(X_train, y_train)  # Train model
             y_train_pred = model.predict(X_train)
             y_test_pred = model.predict(X_test) 
@@ -53,17 +48,21 @@ def evaluate_models(X_train, y_train, X_test, y_test, models):
     except Exception as e:
         raise CustomException(e, sys)
     
-def load_studentperformance():
-    """
-    This function is responsible for loading the file from the file path
-    :param file_path: file path from where the file is to be loaded
-    :return: file
-    """
-    try:
-        with open('artifacts/StudentsPerformance_dataset.csv', 'r') as file:
-            return file.read()
-    except Exception as e:
-        raise CustomException(e,sys)
+def preprocess_data(data):
+    # Check for non-numeric values in numeric columns and handle them
+    for column in data.select_dtypes(include=['float64', 'int64']).columns:
+        if data[column].apply(lambda x: isinstance(x, str)).any():
+            # Handle non-numeric values here (e.g., convert to NaN, remove, etc.)
+            # Example: Convert to NaN and then fill with median or remove
+            data[column] = pd.to_numeric(data[column], errors='coerce')
+            data[column].fillna(data[column].median(), inplace=True)
+
+    # Encode categorical variables
+    label_encoders = {}
+    for column in data.select_dtypes(include=['object']).columns:
+        label_encoders[column] = LabelEncoder()
+        data[column] = label_encoders[column].fit_transform(data[column])
+    return data, label_encoders
     
 
 def load_object(file_path):
