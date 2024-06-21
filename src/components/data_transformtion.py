@@ -30,10 +30,9 @@ class DataTransformation:
             data= pd.read_csv('artifacts/data.csv')
             X= data.drop(columns=[target_column_name],axis=1)
 
-            categorical_columns = X.select_dtypes(include=['object', 'category']).columns
-            numerical_columns = X.select_dtypes(include=['int64', 'float64']).columns.drop(target_column_name)
+            numerical_columns = [feature for feature in X.columns if X[feature].dtypes != 'O']
+            categorical_columns = [feature for feature in X.columns if X[feature].dtypes == 'O']
 
-#categorical_column
             num_pipeline= Pipeline(
                 steps=[
                 ("imputer",SimpleImputer(strategy="median")),
