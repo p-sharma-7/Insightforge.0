@@ -9,6 +9,9 @@ from src.components.data_transformtion import DataTransformation
 from src.components.model_trainer import ModelTrainer
 from src.utlis import load_object, save_object
 
+# Page layout
+st.set_page_config(page_icon=":bar_chart:")
+
 # Title of the app
 st.title('Automated Machine Learning Prediction App')
 
