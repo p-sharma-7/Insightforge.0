@@ -13,7 +13,7 @@ st.write('---')
 coly1, coly2, coly3, coly4, coly5 = st.columns(5)
 
 with coly1:
-    st.page_link('Insightforge.py', label='Home page', use_container_width=True)
+    st.page_link('app.py', label='Home page', use_container_width=True)
 
 with coly2:
     st.page_link('pages/EDA.py', label='EDA', use_container_width=True)

@@ -15,6 +15,7 @@ catboost
 xgboost
 ydata_profiling
 streamlit_pandas_profiling
+streamlit_lottie
 html5lib
 lxml
 beautifulsoup4
