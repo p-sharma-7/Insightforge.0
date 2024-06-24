@@ -76,3 +76,9 @@ def load_object(file_path):
             return dill.load(file)
     except Exception as e:
         raise CustomException(e,sys)
+    
+def process_data(file_path):
+    df = pd.read_csv(file_path)
+    # Efficiently manipulate data using pandas
+    df['processed'] = df['column'].apply(lambda x: x * 2)
+    return df

@@ -28,6 +28,7 @@ class DataTransformation:
         '''
         try:
             data= pd.read_csv('artifacts/data.csv')
+            
             X= data.drop(columns=[target_column_name],axis=1)
 
             numerical_columns = [feature for feature in X.columns if X[feature].dtypes != 'O']
