@@ -80,6 +80,9 @@ def reset_other_checkboxes(selected):
     st.session_state.studentperformance_checkbox = selected == 'studentperformance'
     st.session_state.titanic_checkbox = selected == 'titanic'
 
+st.markdown('')
+st.markdown('')
+st.subheader("Example Datasets: ")
 # Streamlit layout with three columns
 cole1, cole2, cole3 = st.columns(3)
 

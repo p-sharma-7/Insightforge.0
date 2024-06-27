@@ -74,6 +74,10 @@ def reset_other_checkboxes(selected):
     st.session_state.studentperformance_checkbox = selected == 'studentperformance'
     st.session_state.titanic_checkbox = selected == 'titanic'
 
+st.markdown('')
+st.markdown('')
+st.subheader("Example Datasets: ")
+
 # Streamlit layout with three columns
 cole1, cole2, cole3 = st.columns(3)
 
@@ -126,7 +130,8 @@ def main():
         df.drop_duplicates(keep='first', inplace=True)
 
         # Displaying Dataset
-        st.header("Dataset Section")
+        st.subheader("Dataset Section")
+        st.write('Select whether you want to see the cleaned or uncleaned dataset')
         dataset_type = ["Cleaned Dataset","Uncleaned Dataset"]
         dataset_type_choice = st.select_slider("",dataset_type)
 
@@ -153,7 +158,8 @@ def main():
         
         objective_cols, numeric_cols = identify_column_types(df) # passing the cleaned dataset
 
-        st.header("Column's Section")
+        st.subheader("Column's Section: ")
+        st.write("Select the type of columns you want to visualize")
         column_type = ["Categorical Columns","Numerical Columns"]
         column_type_choice = st.select_slider("",column_type)
 

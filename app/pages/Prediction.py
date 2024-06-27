@@ -1,24 +1,23 @@
 import streamlit as st
-st.set_option('deprecation.showPyplotGlobalUse', False)
-import pandas as pd 
-import numpy as np 
-import matplotlib.pyplot as plt 
-import matplotlib
-matplotlib.use("Agg")
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.model_selection import GridSearchCV
 import seaborn as sns
-from sklearn.preprocessing import LabelEncoder
-from sklearn.datasets import load_diabetes
-from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder, StandardScaler
+from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression, Ridge, Lasso
 from sklearn.tree import DecisionTreeRegressor
+from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor
+from sklearn.svm import SVR
 from sklearn.metrics import r2_score, mean_absolute_error, mean_squared_error
-
+from sklearn.datasets import load_diabetes
 
 #---------------Page layout------------------#
 
 st.set_page_config(page_title="Prediction", page_icon=":bar_chart:", layout="wide")
-st.title("Machine Learning Prediction Model")
+
+st.title("Prediction")
 st.write('---')
 coly1, coly2, coly3, coly4, coly5 = st.columns(5)
 
@@ -41,7 +40,7 @@ data = st.file_uploader("Upload a Dataset", type=["csv", "txt"])
 #-----------------pagelayout finished------------------#
 
 
-#----------------data ingestion-------------------------#
+#----------------dataset example-------------------------#
 
 # Define functions to load datasets
 @st.cache_data
@@ -79,6 +78,10 @@ def reset_other_checkboxes(selected):
     st.session_state.studentperformance_checkbox = selected == 'studentperformance'
     st.session_state.titanic_checkbox = selected == 'titanic'
 
+st.markdown('')
+st.markdown('')
+st.subheader("Example Datasets: ")
+
 # Streamlit layout with three columns
 cole1, cole2, cole3 = st.columns(3)
 
@@ -111,160 +114,179 @@ with cole3:
 
 
 
-#----------------data ingestion finished-------------------------#
+#----------------dataset example finished-------------------------#
 
+#----------------prediction-------------------------#
 
+# Data preprocessing and model training functions
+def preprocess_data(df, target_col):
+    X = df.drop(columns=[target_col])
+    y = df[target_col]
+    
+    # Keep only numerical features
+    X = X.select_dtypes(include=[np.number])
+    
+    if X.empty:
+        raise ValueError("The dataset does not contain any numerical features.")
+    
+    feature_names = X.columns
+    
+    # Standardize numerical variables
+    ssc = StandardScaler()
+    X = ssc.fit_transform(X)
+    
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=0)
+    return X_train, X_test, y_train, y_test, ssc, feature_names
+
+def get_model(algo):
+    if algo == "Linear Regression":
+        return LinearRegression()
+    elif algo == "Ridge Regression":
+        return Ridge()
+    elif algo == "Lasso Regression":
+        return Lasso()
+    elif algo == "Decision Tree":
+        return DecisionTreeRegressor()
+    elif algo == "Random Forest":
+        return RandomForestRegressor()
+    elif algo == "Gradient Boosting":
+        return GradientBoostingRegressor()
+    elif algo == "Support Vector Regression":
+        return SVR()
+
+def tune_hyperparameters(model, X_train, y_train):
+    param_grid = {}
+    
+    if isinstance(model, Ridge):
+        param_grid = {'alpha': [0.1, 1.0, 10.0]}
+    elif isinstance(model, Lasso):
+        param_grid = {'alpha': [0.01, 0.1, 1.0]}
+    elif isinstance(model, DecisionTreeRegressor):
+        param_grid = {'max_depth': [3, 5, 10, None]}
+    elif isinstance(model, RandomForestRegressor):
+        param_grid = {'n_estimators': [50, 100, 200], 'max_depth': [3, 5, 10, None]}
+    elif isinstance(model, GradientBoostingRegressor):
+        param_grid = {'n_estimators': [50, 100, 200], 'learning_rate': [0.01, 0.1, 0.2]}
+    elif isinstance(model, SVR):
+        param_grid = {'C': [0.1, 1.0, 10.0], 'epsilon': [0.01, 0.1, 0.2]}
+    
+    if param_grid:
+        grid_search = GridSearchCV(model, param_grid, cv=5, scoring='r2')
+        grid_search.fit(X_train, y_train)
+        return grid_search.best_estimator_
+    else:
+        return model
+
+def plot_feature_importance(model, feature_names):
+    if hasattr(model, 'feature_importances_'):
+        importance = model.feature_importances_
+        feature_importance = pd.DataFrame({'Feature': feature_names, 'Importance': importance})
+        feature_importance = feature_importance.sort_values(by='Importance', ascending=False)
+        
+        plt.figure(figsize=(10, 6))
+        sns.barplot(x='Importance', y='Feature', data=feature_importance)
+        plt.title('Feature Importance')
+        plt.tight_layout()
+        st.pyplot(plt)
+
+def plot_predictions(y_test, y_pred):
+    plt.figure(figsize=(10, 6))
+    plt.scatter(y_test, y_pred, alpha=0.7)
+    plt.plot([y_test.min(), y_test.max()], [y_test.min(), y_test.max()], '--', color='red')
+    plt.xlabel('Actual')
+    plt.ylabel('Predicted')
+    plt.title('Actual vs Predicted')
+    plt.tight_layout()
+    st.pyplot(plt)
+
+def identify_column_types(data):
+
+    objective_cols = []
+    numeric_cols = []
+    for col in df.columns:
+        if df[col].dtype == 'object':
+            objective_cols.append(col)
+        else:
+            numeric_cols.append(col)
+    return objective_cols, numeric_cols
+
+# Initialize session state
+if 'trained' not in st.session_state:
+    st.session_state['trained'] = False
+
+# Main script
 if data is not None:
-            df = pd.read_csv(data)
-            df.dropna(how='any', inplace=True)
-            df.drop_duplicates(keep='first', inplace=True)
-            st.dataframe(df.head())
+    df = pd.read_csv(data)
+    st.write(df.head())
+    st.markdown('---')
 
-            if st.checkbox('Show Full Dataset'):
-                st.write(df)
+    # Identify column types
+    objective_cols, numeric_cols = identify_column_types(df)
+    st.subheader("Column's Section: ")
+    st.write("Select the column type you want to see")
+    column_type = ["Categorical Columns","Numerical Columns"]
+    column_type_choice = st.select_slider("",column_type)
 
-            Algo_selection_type = ["Manual Algo Selection", "Automatic Algo Selection"]    
-            st.subheader("Your Algorithm Preference ?")
-            algo_choice = st.select_slider("Slide To Change", Algo_selection_type)
+    if column_type_choice == "Categorical Columns":
+        st.write(objective_cols)
+    if column_type_choice == "Numerical Columns":
+        st.write(numeric_cols)
 
-            if algo_choice == "Manual Algo Selection":
-                Algo = ["Linear Regression", "Ridge Regression", "Lasso Regression", "Decision Tree"]
-                st.subheader("Select The Algorithm ! ")
-                selected_algo = st.selectbox("Select Algorithm", Algo)
-                df_ml = df.copy()
-
-                def preprocess_data(df):
-                    if "Job Title" in df_ml.columns:
-                        df_ml.drop("Job Title", axis=1, inplace=True)
-                    from sklearn.preprocessing import LabelEncoder    
-                    le = LabelEncoder()
-                    for col in df_ml.select_dtypes(include=['object']).columns:
-                        df_ml[col] = le.fit_transform(df_ml[col])
-                    X = df_ml.iloc[:, :-1]  # predictors
-                    y = df_ml.iloc[:, -1]   # target
-                    from sklearn.preprocessing import StandardScaler
-                    ssc = StandardScaler()
-                    X = ssc.fit_transform(X)
-                    from sklearn.model_selection import train_test_split
-                    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=0)
-                    return X_train, X_test, y_train, y_test, ssc, le
-
-                def get_model(algo):
-                    from sklearn.linear_model import LinearRegression, Ridge, Lasso
-                    from sklearn.tree import DecisionTreeRegressor
-                    if algo == "Linear Regression":
-                        return LinearRegression()
-                    elif algo == "Ridge Regression":
-                        return Ridge(alpha=1.0)
-                    elif algo == "Lasso Regression":
-                        return Lasso(alpha=0.1)
-                    elif algo == "Decision Tree":
-                        return DecisionTreeRegressor() 
-
-                if selected_algo in ["Linear Regression", "Ridge Regression", "Lasso Regression", "Decision Tree"]:
-                    st.success(f"Using {selected_algo}")
-                    X_train, X_test, y_train, y_test, ssc, le = preprocess_data(df)
-                    model = get_model(selected_algo)
-                    model.fit(X_train, y_train)
-                    y_pred = model.predict(X_test)
-
-                    pred_choice = st.radio(label="Select Here", options=["Get Predictions", "Show Description And Efficiency Of Model"])
-                    st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
+    st.success("NOTE: Please make sure that the target column is numerical.")
+    target_col = st.selectbox('Select the target column', df.columns)
+    
+    # Let the user select specific algorithms to use
+    algorithms = ["Linear Regression", "Ridge Regression", "Lasso Regression", "Decision Tree", "Random Forest", "Gradient Boosting", "Support Vector Regression"]
+    selected_algorithms = st.multiselect('Select algorithms to train', algorithms, default=algorithms)
+    
+    if st.button("Train Models"):
+        try:
+            X_train, X_test, y_train, y_test, ssc, feature_names = preprocess_data(df, target_col)
+            
+            r2_scores = []
+            best_models = []
+            
+            for algo in selected_algorithms:
+                model = get_model(algo)
+                tuned_model = tune_hyperparameters(model, X_train, y_train)
+                tuned_model.fit(X_train, y_train)
+                y_pred = tuned_model.predict(X_test)
+                r2 = r2_score(y_test, y_pred)
+                r2_scores.append(r2)
+                best_models.append(tuned_model)
                 
-                    if pred_choice == "Show Description And Efficiency Of Model":
-                        from sklearn.metrics import r2_score, mean_absolute_error, mean_squared_error
-                        st.write(f'Accuracy of the model: {round(r2_score(y_test, y_pred), 4) * 100} %')
-                        st.write(f'Mean absolute error: {round(mean_absolute_error(y_test, y_pred), 2)}')
-                        st.write(f'Mean squared error: {round(mean_squared_error(y_test, y_pred), 2) ** 0.5}')
-                        if selected_algo != "Decision Tree":
-                            coefficient = model.coef_
-                            intercept = model.intercept_
-                            st.write("Coefficients: ", coefficient)
-                            st.write("Intercept: ", intercept)
-
-                    if pred_choice == "Get Predictions":
-                        st.subheader("Enter the values for prediction:")
-                        gender_map = {"Male": 1, "Female": 0}
-                        education_map = {"Bachelors": 0, "Masters": 1, "PhD": 2}
-                        user_input = []
-                        for col in df_ml.columns[:-1]:
-                            if col == "Gender":
-                                user_val = st.selectbox(f"Select {col}:", options=list(gender_map.keys()))
-                                user_input.append(gender_map[user_val])
-                            elif col == "Education Level":
-                                user_val = st.selectbox(f"Select {col}:", options=list(education_map.keys()))
-                                user_input.append(education_map[user_val])
-                            elif df_ml[col].dtype == 'object':
-                                user_val = st.text_input(f"Enter {col}:")
-                                user_input.append(le.transform([user_val])[0])
-                            else:
-                                user_val = st.number_input(f"Enter {col}:", value=0)
-                                user_input.append(user_val)
-                        
-                        input_df = pd.DataFrame([user_input], columns=df_ml.columns[:-1])
-                        input_df = ssc.transform(input_df)
-                        prediction = model.predict(input_df)
-
-                        if st.button("**Get Salary**"):
-                            st.write("**Prediction:**", prediction[0])
-
-            elif algo_choice == "Automatic Algo Selection":
-                st.success("I Am Ready With The Best ML Model For The Dataset Provided !!")
-                df_Ml = df.copy()
-
-                from sklearn.model_selection import train_test_split
-                from sklearn.preprocessing import LabelEncoder, StandardScaler
-                from sklearn.linear_model import LinearRegression, Ridge, Lasso
-                from sklearn.tree import DecisionTreeRegressor
-                from sklearn.metrics import r2_score, mean_absolute_error, mean_squared_error
-
-                def preprocess_data_copied(df_Ml):
-                    if "Job Title" in df_Ml.columns:
-                        df_Ml.drop("Job Title", axis=1, inplace=True)
-                    le = LabelEncoder()
-                    for col in df_Ml.select_dtypes(include=['object']).columns:
-                        df_Ml[col] = le.fit_transform(df_Ml[col])
-                    X = df_Ml.iloc[:, :-1]  # predictors
-                    y = df_Ml.iloc[:, -1]   # target
-                    ssc = StandardScaler()
-                    X = ssc.fit_transform(X)
-                    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=0)
-                    return X_train, X_test, y_train, y_test, ssc, le
+                st.subheader(f"Model: {algo}")
+                st.write(f"R2 Score: {round(r2 * 100, 2)}%")
+                plot_predictions(y_test, y_pred)
+                plot_feature_importance(tuned_model, feature_names)
+            
+            best_algo_index = r2_scores.index(max(r2_scores))
+            best_algo = selected_algorithms[best_algo_index]
+            best_model = best_models[best_algo_index]
+            
+            st.subheader(f"The algorithm with the highest Accuracy is: {best_algo}")
+            st.write(f"**R2 Score is = {round(r2_scores[best_algo_index], 4) * 100}%**")
+            
+            # Store model and scaler in session state
+            st.session_state['best_model'] = best_model
+            st.session_state['ssc'] = ssc
+            st.session_state['feature_names'] = feature_names
+            st.session_state['trained'] = True
                 
-                def get_model(algo):
-                    if algo == "Linear Regression":
-                        return LinearRegression()
-                    elif algo == "Ridge Regression":
-                        return Ridge(alpha=1.0)
-                    elif algo == "Lasso Regression":
-                        return Lasso(alpha=0.1)
-                    elif algo == "Decision Tree":
-                        return DecisionTreeRegressor() 
-                    
-                # Define algorithms to test
-                algorithms = ["Linear Regression", "Ridge Regression", "Lasso Regression", "Decision Tree"]
-                # Preprocess the data
-                X_train, X_test, y_train, y_test, ssc, le = preprocess_data_copied(df_Ml)
-                # Store R2 scores in a list
-                r2_scores = []
-                # Loop through each algorithm
-                for algo in algorithms:                    
-                    # Get the model
-                    model = get_model(algo)
-                    model.fit(X_train, y_train)
-                    y_pred = model.predict(X_test)
-                    # Calculate R2 score
-                    r2 = r2_score(y_test, y_pred)
-                    # Store the R2 score in the list
-                    r2_scores.append(r2)
+        except ValueError as e:
+            st.error(e)
 
-                # Find the best algorithm based on R2 score
-                best_algo_index = r2_scores.index(max(r2_scores))
-                best_algo = algorithms[best_algo_index]
-
-                # Display the best algorithm
-                if st.button("Get The Model"):
-                    st.subheader(f"The algorithm with the highest Accuracy is: {best_algo}")
-                    st.write(f"**R2 Score is = {round(r2_scores[best_algo_index], 4) * 100}%**")
-                
-                
+# Prediction form
+if st.session_state['trained']:
+    st.subheader("Make Predictions with the Best Model")
+    input_data = {}
+    for feature in st.session_state['feature_names']:
+        input_data[feature] = st.number_input(f"{feature}", value=0.0)
+    
+    if st.button("Predict"):
+        input_df = pd.DataFrame(input_data, index=[0])
+        input_scaled = st.session_state['ssc'].transform(input_df)
+        prediction = st.session_state['best_model'].predict(input_scaled)
+        Best_model= st.session_state['best_model']
+        st.write(f"Best Model: {Best_model}")
+        st.write(f"Predicted value: {prediction[0]}")
