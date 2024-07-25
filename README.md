@@ -1,3 +1,5 @@
+**College Capstone Project**
+
 **Introduction**
 
 As we all know, data analysis is something we regularly undertake. Wherever decisions need to be made, we rely on data analysis for better decision-making (data-driven decision-making). In business, we use it frequently, whether it's to gain great insights for targeting the market, making decisions, obtaining predictive insights, tracking performance, and much more. Traditional methods of data analysis often require significant manual effort and expertise, making it difficult for individuals without specialized knowledge to leverage the full potential of their data
