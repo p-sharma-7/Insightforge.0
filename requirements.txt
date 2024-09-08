@@ -19,4 +19,4 @@ html5lib
 lxml
 dill
 streamlit_pandas_profiling
-pandas-profiling
+ydata-profiling
