@@ -1,5 +1,4 @@
 import streamlit as st
-st.set_option('deprecation.showPyplotGlobalUse', False)
 import os
 import pandas as pd 
 import numpy as np 
