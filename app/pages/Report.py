@@ -127,6 +127,7 @@ if st.session_state.data is not None:
 
     # Button to generate Sweetviz report and display in the app
     if st.button("Generate Sweetviz Report"):
+        st.success("This may take a while")
         report_path = generate_sweetviz_report(st.session_state.data)
 
         # Display a message to the user that the report was generated successfully
