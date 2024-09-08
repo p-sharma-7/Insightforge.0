@@ -16,6 +16,5 @@ InsightForge aims to bridge this gap by offering a user-friendly interface and a
 2.	Automation: Automate repetitive tasks and analyses to streamline the data analysis process and reduce the burden on users.
 3.	Ease of Use: Design an intuitive and user-friendly interface that enables users with limited technical expertise to perform complex analyses with ease.
 
-Genric architecture:
-![image](https://github.com/p-sharma-7/Insightforge/assets/152854842/676bc7cd-1f2c-40c4-aeec-bde500c2f248)
+
 
