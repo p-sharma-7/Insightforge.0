@@ -8,8 +8,6 @@ matplotlib.use("Agg")
 import seaborn as sns
 from sklearn.preprocessing import LabelEncoder
 from sklearn.datasets import load_diabetes
-from pandas_profiling import ProfileReport
-#from ydata_profiling import ProfileReport
 from streamlit_pandas_profiling import st_profile_report
 
 
@@ -143,11 +141,6 @@ if data is not None:
         st.write('Data Missing Values:', df.isnull().sum())
         st.markdown('---')
 
-    with col1:
-        st.subheader("Pandas Profiling Report")
-        if st.button("Generate Pandas Profiling Report"):
-            pr= ProfileReport(df, explorative=True)
-            st_profile_report(pr)
         
 
     with col2:
