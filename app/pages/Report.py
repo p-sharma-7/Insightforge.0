@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import sweetviz as sv
 from sklearn.datasets import load_diabetes
+import base64
 
 # Page layout
 st.set_page_config(page_title="Report", page_icon=":bar_chart:", layout="wide")
@@ -108,6 +109,14 @@ def generate_sweetviz_report(df):
     report.show_html(filepath=report_path, open_browser=False)
     return report_path
 
+# Function to create a download link for the Sweetviz report
+def create_download_link(file_path, file_name="sweetviz_report.html"):
+    with open(file_path, 'rb') as f:
+        bytes_data = f.read()
+    b64 = base64.b64encode(bytes_data).decode()
+    href = f'<a href="data:file/html;base64,{b64}" download="{file_name}">Download Sweetviz Report</a>'
+    return href
+
 # Sweetviz Report Integration
 if st.session_state.data is not None:
     st.header('**Input DataFrame**')
@@ -123,5 +132,8 @@ if st.session_state.data is not None:
         with open(report_path, 'r', encoding='utf-8') as file:
             report_html = file.read()
             st.components.v1.html(report_html, width=1000, height=800, scrolling=True)
+
+        # Display the download button
+        st.markdown(create_download_link(report_path), unsafe_allow_html=True)
 else:
     st.warning("No dataset loaded. Please upload a file or select a dataset.")
