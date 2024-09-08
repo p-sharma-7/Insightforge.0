@@ -3,6 +3,7 @@ import pandas as pd
 import sweetviz as sv
 from sklearn.datasets import load_diabetes
 import base64
+import os
 
 # Page layout
 st.set_page_config(page_title="Report", page_icon=":bar_chart:", layout="wide")
@@ -128,12 +129,20 @@ if st.session_state.data is not None:
     if st.button("Generate Sweetviz Report"):
         report_path = generate_sweetviz_report(st.session_state.data)
 
-        # Read the report and display it in an iframe
-        with open(report_path, 'r', encoding='utf-8') as file:
-            report_html = file.read()
-            st.components.v1.html(report_html, width=1000, height=800, scrolling=True)
+        # Display a message to the user that the report was generated successfully
+        st.success("Sweetviz report generated successfully!")
 
-        # Display the download button
+        # Provide the download button
         st.markdown(create_download_link(report_path), unsafe_allow_html=True)
+
+        # Optional: Ask user if they want to display the report inside the app
+        if st.checkbox("Display Report in App (May Cause Performance Issues)"):
+            try:
+                # Read the report and display it in an iframe
+                with open(report_path, 'r', encoding='utf-8') as file:
+                    report_html = file.read()
+                    st.components.v1.html(report_html, width=1000, height=800, scrolling=True)
+            except Exception as e:
+                st.error(f"Error displaying report: {str(e)}")
 else:
     st.warning("No dataset loaded. Please upload a file or select a dataset.")
