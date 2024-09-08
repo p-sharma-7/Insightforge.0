@@ -17,5 +17,3 @@ streamlit_lottie
 html5lib
 lxml
 dill
-Flask
--e .
