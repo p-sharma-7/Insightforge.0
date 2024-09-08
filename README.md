@@ -1,4 +1,26 @@
-**College Capstone Project**
+<h1 align="center">
+    First-year Capstone Project- Insightforge
+</h1>
+
+<p align="center">
+    <strong>🧙&nbsp; A web app to do EDA, Prediction,Data visualiztion without coding ✨</strong>
+</p>
+
+<br>
+
+<p align="center">
+    <img src="https://github.com/p-sharma-7/Insightforge.0/blob/main/artifacts/Screenshot%202024-09-08%20232400.png" width=1200, height=600>
+</p>
+
+<br>
+
+<h3 align="center">
+    🎉 Insightforge is now live! 🎉
+    <br><br>
+    Try it out: <br>
+    <a href="https://insightforge0.streamlit.app/">https://insightforge0.streamlit.app/</a>
+</h3>
+
 
 **Introduction**
 
