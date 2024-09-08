@@ -20,3 +20,4 @@ lxml
 dill
 streamlit_pandas_profiling
 pandas-profiling
+dtale
