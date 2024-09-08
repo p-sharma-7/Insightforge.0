@@ -3,7 +3,7 @@ pandas
 matplotlib
 numpy
 setuptools
-streamlit==1.36.0
+streamlit
 duckdb
 openpyxl
 lazypredict
@@ -16,8 +16,6 @@ xgboost
 streamlit_lottie
 html5lib
 lxml
-streamlit_pandas_profiling
-pandas-profiling
 dill
 Flask
 -e .
