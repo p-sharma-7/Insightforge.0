@@ -63,7 +63,7 @@ st.markdown(
     unsafe_allow_html=True
 )
 st.markdown(
-    '<h3 class="no-wrap">Welcome to our <i>Streamlit-based Application</i> for <i>Deep Data Analysis and Forecasting</i>!</h3>',
+    '<h3 class="no-wrap">Welcome to our <i>Streamlit-based Application</i> for <i>Exploratory Data Analysis and Prediction</i>!</h3>',
     unsafe_allow_html=True
 )
 
@@ -79,13 +79,13 @@ with col3:
     """)
 with col2:
     st.markdown("""
+    *📑 Report:*
+    - Generate detailed EDA reports with Sweetviz for easy 
+                sharing and interpretation.
+                
     *🔮 Prediction:*
     - Get your predictions via multiple machine learning models based 
-                on your desired inputs.
-
-    *📑 Automatic Reporting:*
-    - Generate detailed reports with Pandas Profiling for easy 
-                sharing and interpretation.
+                on your desired inputs.(this feature is in under progress)
     """)
 
 st.markdown(
