@@ -8,7 +8,7 @@ matplotlib.use("Agg")
 import seaborn as sns
 from sklearn.preprocessing import LabelEncoder
 from sklearn.datasets import load_diabetes
-from streamlit_pandas_profiling import st_profile_report
+
 
 
 
